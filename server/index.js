@@ -8,21 +8,31 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+// resolvers
+const { portfolioResolvers } = require("./graphql/resolvers");
+
+// types
+const { portfolioTypes } = require("./graphql/types");
+
 app.prepare().then(() => {
   const server = express();
 
-  // construct a schema using graphql schema language
+  // Construct a schema, using GRAPHQL schema language
   const schema = buildSchema(`
-    type Query {
-      hello: String
-  }
+      ${portfolioTypes}
+      type Query {
+        portfolio(id: ID): Portfolio
+        portfolios: [Portfolio]
+      }
+      
+      type Mutation {
+        createPortfolio(input: PortfolioInput): Portfolio
+      }
   `);
 
-  // the root provides a resolver for each API endpoint
+  // The root provides a resolver for each API endpoint
   const root = {
-    hello: () => {
-      return "hello world";
-    },
+    ...portfolioResolvers,
   };
 
   server.use(
@@ -33,6 +43,7 @@ app.prepare().then(() => {
       graphiql: true,
     })
   );
+
   server.all("*", (req, res) => {
     return handle(req, res);
   });

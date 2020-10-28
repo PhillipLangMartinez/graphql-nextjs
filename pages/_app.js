@@ -5,8 +5,6 @@ import Hero from "@/components/shared/Hero";
 import App from "next/app";
 
 const MyApp = ({ Component, pageProps }) => {
-  console.log(pageProps);
-
   const isHomePage = () => Component.name === "Home";
   return (
     <div className="portfolio-app">
@@ -31,7 +29,6 @@ MyApp.getInitialProps = async (context) => {
     App.getInitialProps && (await App.getInitialProps(context));
   return {
     pageProps: {
-      appData: "hello",
       ...initialProps.pageProps,
     },
   };
