@@ -2,7 +2,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/index.scss";
 import Navbar from "@/components/shared/Navbar";
 import Hero from "@/components/shared/Hero";
-import App from "next/app";
 
 const MyApp = ({ Component, pageProps }) => {
   const isHomePage = () => Component.name === "Home";
@@ -24,13 +23,4 @@ const MyApp = ({ Component, pageProps }) => {
   );
 };
 
-MyApp.getInitialProps = async (context) => {
-  const initialProps =
-    App.getInitialProps && (await App.getInitialProps(context));
-  return {
-    pageProps: {
-      ...initialProps.pageProps,
-    },
-  };
-};
 export default MyApp;

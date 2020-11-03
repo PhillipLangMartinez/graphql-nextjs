@@ -10,7 +10,7 @@ const PortfolioCard = ({ portfolio }) => {
       </div>
       <div className="card-footer no-border">
         <small className="text-muted">
-          {portfolio.startDate} - {portfolio.EndDate}
+          {portfolio.startDate} - {portfolio.endDate}
         </small>
       </div>
     </div>

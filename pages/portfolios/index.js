@@ -1,19 +1,21 @@
-import React from "react";
-import axios from "axios";
 import PortfolioCard from "@/components/portfolios/PortfolioCard";
 import Link from "next/link";
-const fetchPortfolios = async () => {
-  try {
-    const query = `query Portfolios {portfolios {_id title company companyWebsite location jobTitle description startDate endDate}}`;
-    const res = await axios.post("http://localhost:3000/graphql", { query });
+import {
+  useGetPortfolios,
+  useUpdatePortfolio,
+  useDeletePortfolio,
+  useCreatePortfolio,
+} from "@/apollo/actions";
+import withApollo from "@/hoc/withApollo";
+import { getDataFromTree } from "@apollo/react-ssr";
 
-    return res.data.data.portfolios;
-  } catch (error) {
-    return error;
-  }
-};
+const Portfolios = () => {
+  const { data } = useGetPortfolios();
+  const [updatePortfolio] = useUpdatePortfolio();
+  const [deletePortfolio] = useDeletePortfolio();
+  const [createPortfolio] = useCreatePortfolio();
 
-const Portfolios = ({ portfolios }) => {
+  const portfolios = (data && data.portfolios) || [];
   return (
     <>
       <section className="section-title">
@@ -22,16 +24,35 @@ const Portfolios = ({ portfolios }) => {
             <h1>Portfolios</h1>
           </div>
         </div>
+        <button onClick={createPortfolio} className="btn btn-primary">
+          Create Portfolio
+        </button>
       </section>
       <section className="pb-5">
         <div className="row">
           {portfolios.map((portfolio) => (
             <div key={portfolio._id} className="col-md-4">
-              <Link href={`/portfolios/${portfolio._id}`}>
+              <Link href="/portfolios/[id]" as={`/portfolios/${portfolio._id}`}>
                 <a className="card-link">
                   <PortfolioCard portfolio={portfolio} />
                 </a>
               </Link>
+              <button
+                className="btn btn-warning"
+                onClick={() =>
+                  updatePortfolio({ variables: { id: portfolio._id } })
+                }
+              >
+                Update Portfolio
+              </button>
+              <button
+                onClick={() =>
+                  deletePortfolio({ variables: { id: portfolio._id } })
+                }
+                className="btn btn-danger"
+              >
+                Delete Portfolio
+              </button>
             </div>
           ))}
         </div>
@@ -40,11 +61,4 @@ const Portfolios = ({ portfolios }) => {
   );
 };
 
-Portfolios.getInitialProps = async () => {
-  const portfolios = await fetchPortfolios();
-  return {
-    portfolios,
-  };
-};
-
-export default Portfolios;
+export default withApollo(Portfolios, { getDataFromTree });
